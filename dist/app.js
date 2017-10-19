@@ -29,34 +29,40 @@ module.exports = {retrieveKeys};
 
 const movieDiv = $('#movies');
 
-const domString = (arr) => {
+const domString = (arr, imgBaseURL) => {
     let movieString = '';
-    arr.forEach((movie, i) => {
-        if (i % 3 === 0) {
-            movieString += `<div class="row">`;
-        }
-        movieString += 
-            `<div class="col-sm-6 col-md-4">
-                <div class="thumbnail">
-                    <img src="..." alt="...">
-                    <div class="caption">
-                        <h3>${movie.original_title}</h3>
-                        <p>${movie.overview}</p>
-                        <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
+    let posterSize = 'w342';
+    if (arr.length === 0) {
+        movieString += `<h3>No Results Found</h3>`; 
+    } 
+    else {
+        arr.forEach((movie, i) => {
+            if (i % 3 === 0) {
+                movieString += `<div class="row">`;
+            }
+            movieString += 
+                `<div class="col-sm-6 col-md-4">
+                    <div class="thumbnail">
+                        <img src="${imgBaseURL + posterSize + movie.poster_path}" alt="poster">
+                        <div class="caption">
+                            <h3>${movie.original_title}</h3>
+                            <p>${movie.overview}</p>
+                            <p><a href="#" class="btn btn-primary" role="button">Review</a> <a href="#" class="btn btn-default" role="button">Wishlist</a></p>
+                        </div>
                     </div>
-                </div>
-            </div>`;
-        if (i % 3 === 2 || i === arr.length - 1 ) {
-            movieString += `</div>`;
-        }
-    });
+                </div>`;
+            if (i % 3 === 2 || i === arr.length - 1 ) {
+                movieString += `</div>`;
+            }
+        });
+    }
     printToDom(movieString); 
 };
 
 
 
 const printToDom = (str) => {
-    movieDiv.append(str);
+    movieDiv.html(str);
 };
 
 module.exports = {
@@ -99,6 +105,7 @@ $(document).ready(() => {
 const dom = require('./dom');
 
 let tmdbKey = ''; 
+let imgConfig = {}; 
 
 const searchTMDB = (searchString) => {
     return new Promise ((resolve, reject) => {
@@ -121,7 +128,30 @@ const searchTMDB = (searchString) => {
 
 const searchMovies = (searchString) => {
     searchTMDB(searchString).then((data) => {
-        showResults(data.results);
+        showResults(data.results, imgConfig.base_url);
+    }).catch((error) => {
+        console.log(error); 
+    });
+};
+
+const tmdbConfiguration = () => {
+    return new Promise ((resolve, reject) => {
+        $.ajax({
+            url: `https://api.themoviedb.org/3/configuration`,
+            data: {
+                "api_key": tmdbKey
+            }
+        }).done((data) => {
+            resolve(data); 
+        }).fail((error) => {
+            reject(error); 
+        });
+    });
+};
+
+const getConfig = () => {
+    tmdbConfiguration().then((result) => {
+        setImgConfig(result.images);
     }).catch((error) => {
         console.log(error); 
     });
@@ -129,10 +159,15 @@ const searchMovies = (searchString) => {
 
 const setKey = (str) => {
     tmdbKey= str; 
+    getConfig(); 
 };
 
-const showResults = (arr) => {
-    dom.domString(arr); 
+const setImgConfig = (obj) => {
+    imgConfig = obj; 
+};
+
+const showResults = (arr, imgBaseURL) => {
+    dom.domString(arr, imgBaseURL); 
 };
 
 module.exports = {
