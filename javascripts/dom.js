@@ -3,6 +3,7 @@
 const movieDiv = $('#movies');
 
 const domString = (arr, imgBaseURL) => {
+    console.log(arr); 
     let movieString = '';
     let posterSize = 'w342';
     if (arr.length === 0) {
