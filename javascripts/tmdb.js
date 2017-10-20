@@ -55,8 +55,8 @@ const getConfig = () => {
     });
 };
 
-const setKey = (str) => {
-    tmdbKey= str; 
+const setKey = (keyString) => {
+    tmdbKey = keyString; 
     getConfig(); 
 };
 

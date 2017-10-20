@@ -2,13 +2,14 @@
 "use strict";
 
 const tmdb = require('./tmdb');
+const firebaseApi = require('./firebaseApi'); 
 
 const apiKeys = () => {
     return new Promise ((resolve, reject) => {
         $.ajax({
-            url: `db/apiKeys.json`
+            url: `db/config.json`
         }).done((data) => {
-            resolve(data.apiKeys); 
+            resolve(data.config); 
         }).fail((error) => {
             reject(error); 
         });
@@ -16,15 +17,17 @@ const apiKeys = () => {
 };
 
 const retrieveKeys = () => {
-    apiKeys().then((data) => {        
-        tmdb.setKey(data.tmdb.apiKey); 
+    apiKeys().then((results) => {        
+        tmdb.setKey(results.tmdb.apiKey);
+        firebaseApi.setObject(results.firebase);
+        firebase.initializeApp(results.firebase); 
     }).catch((error) => {
         console.log(error); 
     });
 };
 
 module.exports = {retrieveKeys};
-},{"./tmdb":5}],2:[function(require,module,exports){
+},{"./firebaseApi":4,"./tmdb":6}],2:[function(require,module,exports){
 "use strict";
 
 const movieDiv = $('#movies');
@@ -87,7 +90,22 @@ const pressEnter = () => {
 
 
 module.exports = {pressEnter}; 
-},{"./tmdb":5}],4:[function(require,module,exports){
+},{"./tmdb":6}],4:[function(require,module,exports){
+"use strict";
+
+let firebaseObj = {};
+
+const setObject = (obj) => {
+    firebaseObj = obj;
+};
+
+
+module.exports = {
+    setObject
+};
+
+
+},{}],5:[function(require,module,exports){
 "use strict";
 
 const dom = require('./dom');
@@ -99,7 +117,9 @@ $(document).ready(() => {
     apiKeys.retrieveKeys(); 
     events.pressEnter(); 
 });
-},{"./apiKeys":1,"./dom":2,"./events":3}],5:[function(require,module,exports){
+
+
+},{"./apiKeys":1,"./dom":2,"./events":3}],6:[function(require,module,exports){
 "use strict";
 
 const dom = require('./dom');
@@ -157,8 +177,8 @@ const getConfig = () => {
     });
 };
 
-const setKey = (str) => {
-    tmdbKey= str; 
+const setKey = (keyString) => {
+    tmdbKey = keyString; 
     getConfig(); 
 };
 
@@ -174,4 +194,4 @@ module.exports = {
     searchMovies,
     setKey
 };
-},{"./dom":2}]},{},[4]);
+},{"./dom":2}]},{},[5]);
