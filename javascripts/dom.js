@@ -7,7 +7,7 @@ const domString = (arr, imgBaseURL) => {
     let movieString = '';
     let posterSize = 'w342';
     if (arr.length === 0) {
-        movieString += `<h3>No Results Found</h3>`; 
+        movieString += `<h3 style="text-align:center;">No Results Found</h3>`; 
     } 
     else {
         arr.forEach((movie, i) => {

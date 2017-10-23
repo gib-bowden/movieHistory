@@ -14,5 +14,26 @@ const pressEnter = () => {
     });
 };
 
+const myLinks = () => {
+    $('#navbar').click((e) => {
+        if (e.target.id === 'nav-auth-btn') {
+            $('#auth-screen').removeClass("hide");
+            $('#my-movies').addClass("hide");
+            $('#search').addClass("hide");
+        }
+        else if (e.target.id === 'nav-my-movies-btn') {
+            $('#auth-screen').addClass("hide");
+            $('#my-movies').removeClass("hide");
+            $('#search').addClass("hide"); 
+        }
+        else if (e.target.id === 'nav-search-btn') {
+            $('#auth-screen').addClass("hide");
+            $('#my-movies').addClass("hide");
+            $('#search').removeClass("hide");
+        }
+    });
+};
 
-module.exports = {pressEnter}; 
+
+module.exports = {pressEnter, myLinks
+}; 

@@ -11,7 +11,7 @@
 </head>
 <body>
     <!-- navbar -->
-    <nav class="navbar navbar-inverse">
+    <nav class="navbar navbar-inverse" id="navbar">
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
@@ -27,23 +27,37 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">Authentication</a></li>
-                <li><a href="#">My Movies</a></li>
-                <li><a href="#">Search</a></li>
+                <li><a class="nav-btn" id="nav-auth-btn" >Authentication</a></li>
+                <li><a class="nav-btn" id="nav-my-movies-btn">My Movies</a></li>
+                <li><a class="nav-btn" id="nav-search-btn">Search</a></li>
               </ul>
             </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
     </nav>
         <!-- end navbar -->
-    <div id="search-container">
-        <div id="main-search-bar" class="input-group input-group-large col-xs-6 col-xs-offset-3">
-            <span class="input-group-addon glyphicon glyphicon-search" id="basic-addon1"></span>
-            <input id="movie-search-field" type="text" class="form-control" placeholder="Search Movies" aria-describedby="basic-addon1">
+    
+    <div id="search" class="hide"> 
+        <div id="search-container">
+            <div id="main-search-bar" class="input-group input-group-large col-xs-6 col-xs-offset-3">
+                <span class="input-group-addon glyphicon glyphicon-search" id="basic-addon1"></span>
+                <input id="movie-search-field" type="text" class="form-control" placeholder="Search Movies" aria-describedby="basic-addon1">
+            </div>
+        </div>
+
+        <div id="content-container">
+            <div id="movies"></div>
         </div>
     </div>
 
-    <div id="content-container">
-        <div id="movies"></div>
+    <div id="my-movies" class="hide">
+        <h1>My Movies</h1>
+    </div>
+
+    <div id="auth-screen">
+        <h1>Sign In</h1>
+        <button class="btn" id="google-btn">
+            <img src="./images/google.png" alt="" srcset="">
+        </button>
     </div>
 
     <script type="text/javascript" src="https://www.gstatic.com/firebasejs/4.5.2/firebase.js"></script>
