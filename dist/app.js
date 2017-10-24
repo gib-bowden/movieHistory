@@ -33,7 +33,6 @@ module.exports = {retrieveKeys};
 const movieDiv = $('#movies');
 
 const domString = (arr, imgBaseURL) => {
-    console.log(arr); 
     let movieString = '';
     let posterSize = 'w342';
     if (arr.length === 0) {
@@ -76,13 +75,12 @@ module.exports = {
 "use strict"; 
 
 const tmdb = require('./tmdb');
-
+const firebaseApi = require('./firebaseApi');
 const movieSearchField = $("#movie-search-field"); 
 
 const pressEnter = () => {
     $('body').keypress((e) => {
         if (e.which === 13) {
-            console.log(movieSearchField.val()); 
             let searchString = movieSearchField.val();
             tmdb.searchMovies(searchString); 
         }
@@ -109,21 +107,47 @@ const myLinks = () => {
     });
 };
 
+const googleAuth = () => {
+    $('#google-btn').click((e) => {
+        firebaseApi.authenticateGoogle().then((results) => {
+            console.log(results); 
+        }).catch((error) => {
+            console.log(error); 
+        }); 
+    });
+};
 
-module.exports = {pressEnter, myLinks
+
+module.exports = {pressEnter, myLinks, googleAuth
 }; 
-},{"./tmdb":6}],4:[function(require,module,exports){
+},{"./firebaseApi":4,"./tmdb":6}],4:[function(require,module,exports){
 "use strict";
 
 let firebaseObj = {};
+let userUid = ''; 
 
 const setObject = (obj) => {
     firebaseObj = obj;
 };
 
+//Firebase: GOOGLE - Use input credentials to authenticate user.
+let authenticateGoogle = () => {
+    return new Promise((resolve, reject) => {
+      var provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider)
+        .then((authData) => {
+        	userUid = authData.user.uid;
+            resolve(authData.user);
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+  };
+
 
 module.exports = {
-    setObject
+    setObject,
+    authenticateGoogle
 };
 
 
@@ -137,7 +161,8 @@ const events = require('./events');
 
 $(document).ready(() => {
     apiKeys.retrieveKeys(); 
-    events.myLinks(); 
+    events.myLinks();
+    events.googleAuth(); 
     events.pressEnter(); 
 });
 
