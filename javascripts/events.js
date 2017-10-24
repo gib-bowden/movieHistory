@@ -1,13 +1,12 @@
 "use strict"; 
 
 const tmdb = require('./tmdb');
-
+const firebaseApi = require('./firebaseApi');
 const movieSearchField = $("#movie-search-field"); 
 
 const pressEnter = () => {
     $('body').keypress((e) => {
         if (e.which === 13) {
-            console.log(movieSearchField.val()); 
             let searchString = movieSearchField.val();
             tmdb.searchMovies(searchString); 
         }
@@ -34,6 +33,16 @@ const myLinks = () => {
     });
 };
 
+const googleAuth = () => {
+    $('#google-btn').click((e) => {
+        firebaseApi.authenticateGoogle().then((results) => {
+            console.log(results); 
+        }).catch((error) => {
+            console.log(error); 
+        }); 
+    });
+};
 
-module.exports = {pressEnter, myLinks
+
+module.exports = {pressEnter, myLinks, googleAuth
 }; 
