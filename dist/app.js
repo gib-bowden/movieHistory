@@ -32,7 +32,7 @@ module.exports = {retrieveKeys};
 
 const movieDiv = $('#movies');
 
-const domString = (arr, imgBaseURL, divName) => {
+const domString = (arr, imgBaseURL, divName, search) => {
     let movieString = '';
     let posterSize = 'w342';
     if (arr.length === 0) {
@@ -45,13 +45,22 @@ const domString = (arr, imgBaseURL, divName) => {
             }
             movieString += 
                 `<div class="col-sm-6 col-md-4 movie">
-                    <div class="thumbnail">
-                        <img class="poster-path" src="${imgBaseURL + posterSize + movie.poster_path}" alt="poster">
+                    <div class="thumbnail">`;
+                    if (search === false) {
+                        movieString += `<button data-firebase-id=${movie.id} class="btn btn-default delete-btn">X</button>`;
+                    }
+                    movieString +=                         
+                        `<img class="poster-path" src="${imgBaseURL + posterSize + `/` + movie.poster_path}" alt="poster">
                         <div class="caption">
                             <h3 class="title">${movie.title}</h3>
-                            <p class="overview">${movie.overview}</p>
-                            <p><a class="btn btn-primary review-btn" role="button">Review</a> <a class="btn btn-default wishlist-btn" role="button">Wishlist</a></p>
-                        </div>
+                            <p class="overview">${movie.overview}</p>`;
+                    if (search === true) {
+                        movieString += `<p><a class="btn btn-primary review-btn" role="button">Review</a> <a class="btn btn-default wishlist-btn" role="button">Wishlist</a></p>`;
+                    } else {
+                        movieString += `<p>Rating:${movie.rating}</p>`;
+                    }
+                    movieString +=    
+                        `</div>
                     </div>
                 </div>`;
             if (i % 3 === 2 || i === arr.length - 1 ) {
@@ -79,6 +88,15 @@ const dom = require('./dom');
 const firebaseApi = require('./firebaseApi');
 const movieSearchField = $("#movie-search-field"); 
 
+
+const getMyMovies = () => {
+    firebaseApi.getMovieList().then((results) => {
+        dom.domString(results, tmdb.getImgConfig().base_url, "my-movies", false);
+    }).catch((error) => {
+        console.log(error); 
+    });
+};
+
 const pressEnter = () => {
     $('body').keypress((e) => {
         if (e.which === 13) {
@@ -96,11 +114,7 @@ const myLinks = () => {
             $('#search').addClass("hide");
         }
         else if (e.target.id === 'nav-my-movies-btn') {
-            firebaseApi.getMovieList().then((results) => {
-                dom.domString(results, tmdb.getImgConfig().base_url, "my-movies");
-            }).catch((error) => {
-                console.log(error); 
-            });
+            getMyMovies(); 
             $('#auth-screen').addClass("hide");
             $('#my-movies').removeClass("hide");
             $('#search').addClass("hide"); 
@@ -157,6 +171,7 @@ const reviewEvents = () => {
             "isWatched": true,
             "uid":""
         };
+        console.log(newMovie.poster_path); 
         firebaseApi.saveMovie(newMovie).then((result) => {
             console.log(result); 
         }).catch((err) => {
@@ -166,12 +181,24 @@ const reviewEvents = () => {
     });
 };
 
+const deleteMovie = () => {
+    $('body').on('click', '.delete-btn', (e) => {
+        let movieId = $(e.target).data('firebase-id'); 
+        firebaseApi.deleteMovie(movieId).then(() => {
+            getMyMovies(); 
+        }).catch((err) => {
+            console.log(err);
+        });
+    });
+};
+
 const init = () => {
     myLinks();
     wishListEvents();
     reviewEvents();
     googleAuth(); 
-    pressEnter(); 
+    pressEnter();
+    deleteMovie(); 
 };
 
 
@@ -246,12 +273,26 @@ let authenticateGoogle = () => {
     });
   };
 
+  const deleteMovie = (movieId) => {
+    return new Promise ((resolve, reject) => {
+        $.ajax({
+            type: "DELETE",
+            url: `${firebaseObj.databaseURL}/movies/${movieId}.json`,
+        }).then((result) => {
+            resolve(result); 
+        }).catch((err) => {
+            reject(err); 
+        });
+    });
+  };
+
 module.exports = {
     setObject,
     authenticateGoogle,
     getMovieList,
     checkForStoredUserUid,
-    saveMovie
+    saveMovie,
+    deleteMovie
 };
 
 
@@ -341,7 +382,7 @@ const setImgConfig = (obj) => {
 };
 
 const showResults = (arr, imgBaseURL) => {
-    dom.domString(arr, imgBaseURL, 'movies'); 
+    dom.domString(arr, imgBaseURL, 'movies', true); 
 };
 
 const getImgConfig = () => {

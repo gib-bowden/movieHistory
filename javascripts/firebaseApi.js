@@ -64,11 +64,25 @@ let authenticateGoogle = () => {
     });
   };
 
+  const deleteMovie = (movieId) => {
+    return new Promise ((resolve, reject) => {
+        $.ajax({
+            type: "DELETE",
+            url: `${firebaseObj.databaseURL}/movies/${movieId}.json`,
+        }).then((result) => {
+            resolve(result); 
+        }).catch((err) => {
+            reject(err); 
+        });
+    });
+  };
+
 module.exports = {
     setObject,
     authenticateGoogle,
     getMovieList,
     checkForStoredUserUid,
-    saveMovie
+    saveMovie,
+    deleteMovie
 };
 
