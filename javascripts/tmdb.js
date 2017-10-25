@@ -65,10 +65,15 @@ const setImgConfig = (obj) => {
 };
 
 const showResults = (arr, imgBaseURL) => {
-    dom.domString(arr, imgBaseURL); 
+    dom.domString(arr, imgBaseURL, 'movies'); 
 };
+
+const getImgConfig = () => {
+    return imgConfig; 
+}; 
 
 module.exports = {
     searchMovies,
-    setKey
+    setKey,
+    getImgConfig
 };

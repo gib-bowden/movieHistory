@@ -2,7 +2,7 @@
 
 const movieDiv = $('#movies');
 
-const domString = (arr, imgBaseURL) => {
+const domString = (arr, imgBaseURL, divName) => {
     let movieString = '';
     let posterSize = 'w342';
     if (arr.length === 0) {
@@ -14,13 +14,13 @@ const domString = (arr, imgBaseURL) => {
                 movieString += `<div class="row">`;
             }
             movieString += 
-                `<div class="col-sm-6 col-md-4">
+                `<div class="col-sm-6 col-md-4 movie">
                     <div class="thumbnail">
-                        <img src="${imgBaseURL + posterSize + movie.poster_path}" alt="poster">
+                        <img class="poster-path" src="${imgBaseURL + posterSize + movie.poster_path}" alt="poster">
                         <div class="caption">
-                            <h3>${movie.original_title}</h3>
-                            <p>${movie.overview}</p>
-                            <p><a href="#" class="btn btn-primary" role="button">Review</a> <a href="#" class="btn btn-default" role="button">Wishlist</a></p>
+                            <h3 class="title">${movie.title}</h3>
+                            <p class="overview">${movie.overview}</p>
+                            <p><a class="btn btn-primary review-btn" role="button">Review</a> <a class="btn btn-default wishlist-btn" role="button">Wishlist</a></p>
                         </div>
                     </div>
                 </div>`;
@@ -29,13 +29,13 @@ const domString = (arr, imgBaseURL) => {
             }
         });
     }
-    printToDom(movieString); 
+    printToDom(movieString, divName); 
 };
 
 
 
-const printToDom = (str) => {
-    movieDiv.html(str);
+const printToDom = (str, divName) => {
+    $(`#${divName}`).html(str);
 };
 
 module.exports = {
