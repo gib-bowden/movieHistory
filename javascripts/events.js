@@ -1,6 +1,7 @@
 "use strict"; 
 
 const tmdb = require('./tmdb');
+const dom = require('./dom');
 const firebaseApi = require('./firebaseApi');
 const movieSearchField = $("#movie-search-field"); 
 
@@ -21,6 +22,11 @@ const myLinks = () => {
             $('#search').addClass("hide");
         }
         else if (e.target.id === 'nav-my-movies-btn') {
+            firebaseApi.getMovieList().then((results) => {
+                dom.domString(results, tmdb.getImgConfig().base_url, "my-movies");
+            }).catch((error) => {
+                console.log(error); 
+            });
             $('#auth-screen').addClass("hide");
             $('#my-movies').removeClass("hide");
             $('#search').addClass("hide"); 
@@ -33,6 +39,7 @@ const myLinks = () => {
     });
 };
 
+
 const googleAuth = () => {
     $('#google-btn').click((e) => {
         firebaseApi.authenticateGoogle().then((results) => {
@@ -43,6 +50,58 @@ const googleAuth = () => {
     });
 };
 
+const wishListEvents = () => {
+    $("body").on("click", ".wishlist-btn", (e) => {
+        let movieParent = e.target.closest('.movie');
 
-module.exports = {pressEnter, myLinks, googleAuth
-}; 
+        let newMovie = {
+            "title": $(movieParent).find('.title').html(),
+            "overview": $(movieParent).find('.title').html(),
+            "poster_path":$(movieParent).find('.poster-path').attr("src").split("/").pop(),
+            "rating": null,
+            "isWatched": false,
+            "uid":""
+        };
+        firebaseApi.saveMovie(newMovie).then((result) => {
+            console.log(result); 
+        }).catch((err) => {
+            console.log(err);
+        });
+        movieParent.remove(); 
+    });
+};
+
+const reviewEvents = () => {
+    $("body").on("click", ".review-btn", (e) => {
+        let movieParent = e.target.closest('.movie');
+
+        let newMovie = {
+            "title": $(movieParent).find('.title').html(),
+            "overview": $(movieParent).find('.title').html(),
+            "poster_path":$(movieParent).find('.poster-path').attr("src").split("/").pop(),
+            "rating": null,
+            "isWatched": true,
+            "uid":""
+        };
+        firebaseApi.saveMovie(newMovie).then((result) => {
+            console.log(result); 
+        }).catch((err) => {
+            console.log(err);
+        });
+        movieParent.remove();
+    });
+};
+
+const init = () => {
+    myLinks();
+    wishListEvents();
+    reviewEvents();
+    googleAuth(); 
+    pressEnter(); 
+};
+
+
+
+module.exports = {
+    init
+};

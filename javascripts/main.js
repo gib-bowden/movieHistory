@@ -3,12 +3,14 @@
 const dom = require('./dom');
 const apiKeys = require('./apiKeys');
 const events = require('./events');
+const firebaseApi = require('./firebaseApi');
 
 
 $(document).ready(() => {
     apiKeys.retrieveKeys(); 
-    events.myLinks();
-    events.googleAuth(); 
-    events.pressEnter(); 
+    firebaseApi.checkForStoredUserUid(); 
+    events.init();
 });
+
+
 
