@@ -65,7 +65,7 @@ const setImgConfig = (obj) => {
 };
 
 const showResults = (arr, imgBaseURL) => {
-    dom.domString(arr, imgBaseURL, 'movies'); 
+    dom.domString(arr, imgBaseURL, 'movies', true); 
 };
 
 const getImgConfig = () => {

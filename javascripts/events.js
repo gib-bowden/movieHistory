@@ -5,6 +5,15 @@ const dom = require('./dom');
 const firebaseApi = require('./firebaseApi');
 const movieSearchField = $("#movie-search-field"); 
 
+
+const getMyMovies = () => {
+    firebaseApi.getMovieList().then((results) => {
+        dom.domString(results, tmdb.getImgConfig().base_url, "my-movies", false);
+    }).catch((error) => {
+        console.log(error); 
+    });
+};
+
 const pressEnter = () => {
     $('body').keypress((e) => {
         if (e.which === 13) {
@@ -22,11 +31,7 @@ const myLinks = () => {
             $('#search').addClass("hide");
         }
         else if (e.target.id === 'nav-my-movies-btn') {
-            firebaseApi.getMovieList().then((results) => {
-                dom.domString(results, tmdb.getImgConfig().base_url, "my-movies");
-            }).catch((error) => {
-                console.log(error); 
-            });
+            getMyMovies(); 
             $('#auth-screen').addClass("hide");
             $('#my-movies').removeClass("hide");
             $('#search').addClass("hide"); 
@@ -83,6 +88,7 @@ const reviewEvents = () => {
             "isWatched": true,
             "uid":""
         };
+        console.log(newMovie.poster_path); 
         firebaseApi.saveMovie(newMovie).then((result) => {
             console.log(result); 
         }).catch((err) => {
@@ -92,12 +98,24 @@ const reviewEvents = () => {
     });
 };
 
+const deleteMovie = () => {
+    $('body').on('click', '.delete-btn', (e) => {
+        let movieId = $(e.target).data('firebase-id'); 
+        firebaseApi.deleteMovie(movieId).then(() => {
+            getMyMovies(); 
+        }).catch((err) => {
+            console.log(err);
+        });
+    });
+};
+
 const init = () => {
     myLinks();
     wishListEvents();
     reviewEvents();
     googleAuth(); 
-    pressEnter(); 
+    pressEnter();
+    deleteMovie(); 
 };
 
 
